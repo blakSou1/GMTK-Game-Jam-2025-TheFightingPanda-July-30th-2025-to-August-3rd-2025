@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05d2c7660589e814a935d739a20b495d, type: 3}
+  m_Name: Wave_1
+  m_EditorClassIdentifier: 
+  mobs:
+  - objectPoolName: e
+    count: 5
+    startSpawnTime: 0
+    spawnInterval: 1
+    spawnDuration: 0
+  - objectPoolName: e
+    count: 15
+    startSpawnTime: 2
+    spawnInterval: 0
+    spawnDuration: 3
+  - objectPoolName: e
+    count: 10
+    startSpawnTime: 7
+    spawnInterval: 0
+    spawnDuration: 2
+  waveEvents:
+  - endOfWave: 1
+    eventTime: 10
+    onEvent: {fileID: 5935838295469632042, guid: 34d77172ccaa49443a4d483fcf4c8298, type: 3}
+  objectPools:
+  - objectPoolName: e
+    item: []
+    obraz: {fileID: 1546525217582138215, guid: 8d808057507f8ae42ac503b783d7f8aa, type: 3}
+    expandable: 0
+    initialPoolSize: 5
+  numberWave: 1

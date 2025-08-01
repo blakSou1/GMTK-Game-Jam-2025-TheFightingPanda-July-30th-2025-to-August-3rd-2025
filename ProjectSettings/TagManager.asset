@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!78 &1
+TagManager:
+  serializedVersion: 3
+  tags:
+  - HUD
+  layers:
+  - Default
+  - TransparentFX
+  - Ignore Raycast
+  - Player
+  - Water
+  - UI
+  - Enemy
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
+  m_SortingLayers:
+  - name: Baground
+    uniqueID: 745220871
+    locked: 0
+  - name: a
+    uniqueID: 2889234907
+    locked: 0
+  - name: New Layer 6
+    uniqueID: 3069085785
+    locked: 0
+  - name: Default
+    uniqueID: 0
+    locked: 0
+  - name: enemy
+    uniqueID: 1818233437
+    locked: 0
+  - name: Player
+    uniqueID: 365945159
+    locked: 0
+  - name: New Layer 5
+    uniqueID: 473380067
+    locked: 0
+  m_RenderingLayers:
+  - Default

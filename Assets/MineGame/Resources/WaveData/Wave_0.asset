@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mobs:
   - objectPoolName: e
-    count: 8
+    count: 5
     startSpawnTime: 0
     spawnInterval: 3
     spawnDuration: 0

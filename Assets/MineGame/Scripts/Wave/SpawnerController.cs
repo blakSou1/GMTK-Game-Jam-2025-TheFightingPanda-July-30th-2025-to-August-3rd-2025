@@ -15,6 +15,7 @@ public class SpawnerController : MonoBehaviour
     private int coroutineCount = 0;
 
     public static SpawnerController spawnerController;
+    private Coroutine coroutineSpawn;
     #endregion
 
     private void Awake()
@@ -30,7 +31,7 @@ public class SpawnerController : MonoBehaviour
         pool = new();
         pool.Init();
         EnemyPrefab = enemyPrefab;
-        pool.DoneCreatePool += i => StartCoroutine(SpawnMobs());
+        pool.DoneCreatePool += i => coroutineSpawn = StartCoroutine(SpawnMobs());
     }
 
     public void StartSpawmWave(Wave wave)
@@ -69,7 +70,11 @@ public class SpawnerController : MonoBehaviour
                         continue;
                 }
 
-                events.onEvent.Components.OfType<IEvent>().FirstOrDefault().Execute(new State());
+                events.onEvent.Components.OfType<IEvent>().FirstOrDefault().Execute(new StateEvent
+                {
+                    coroutine = coroutineSpawn,
+                    monoBehaviour = this
+                });
             }
 
             yield return new WaitForSeconds(.2f);

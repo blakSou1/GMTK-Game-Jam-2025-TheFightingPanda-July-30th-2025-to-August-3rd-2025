@@ -44,6 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1729a46f79086449a991b5512530e60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  idCMS: CMS/Templates/Gun
   Components:
   - rid: 3560024456616476683
   - rid: 6038159927857643761
@@ -58,6 +59,7 @@ MonoBehaviour:
     - rid: 6038159927857643761
       type: {class: TagGun, ns: , asm: CMS}
       data:
+        audioClip: {fileID: 8300000, guid: 190395632309cb144b1a2fe4ad718dcc, type: 3}
         mask:
           serializedVersion: 2
           m_Bits: 64

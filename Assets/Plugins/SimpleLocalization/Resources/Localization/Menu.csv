@@ -2,12 +2,12 @@ Key,English,German,Russian
 Menu.Example.Menu,Menu,Speisekarte,Меню
 Menu.Example.Load,Load,Laden,Нагрузка
 Menu.Example.Start,Start,Start,Начинать
-Menu.Example.Quit,Quit,Aufhören,Покидать
+Menu.Example.Quit,Exit,Ausfahrt,Выход
 Menu.Example.Setting,Settings,Einstellungen,Настройки
 Menu.Example.AudioSettings,Audio Settings,Audioeinstellungen,Настройки звука
 Menu.Example.Language,Language,Sprache,Язык
 Menu.Example.Music,Music,Musik,Музыка
-Menu.Example.Soundeffects,Soundeffects,SoundEffects,SoundEffects
+Menu.Example.Soundeffects,Sound Effects,Soundeffekte,Звуковые эффекты
 Menu.Example.Mute,Mute,Stumm,Немой
 Menu.Example.Volume,Volume,Volumen,Объем
 Menu.Example.Create,Create,Erstellen,Создавать

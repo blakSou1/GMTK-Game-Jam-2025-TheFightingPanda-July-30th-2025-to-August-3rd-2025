@@ -44,8 +44,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e1729a46f79086449a991b5512530e60, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  idCMS: CMS/Templates/EventEndWave
   Components:
   - rid: 6038159927857643762
+  state: {fileID: 0}
   references:
     version: 2
     RefIds:

@@ -8,6 +8,7 @@ public class Player : MonoBehaviour
 {
     #region Param
     public static Player player;
+    [SerializeField] private CanvasGroup canvasGroupLouse;
 
     public CMSEntityPfb cMSEntityPfb;
     private TagGun GunModel;
@@ -21,15 +22,28 @@ public class Player : MonoBehaviour
     private Transform parent; // Родитель для объектов
     public Transform startPos;
     private Animator anim;
+    private AudioSource audioSourceShot;
 
-    public int health = 100;
-    public int maxHealth = 100;
-    [SerializeField] private Image hpBar;
+    public Param param;
     #endregion
     #endregion
 
+    private void OnDead()
+    {
+        StartCoroutine(Controller.controller.UpdatePanel(canvasGroupLouse));
+    }
     public void Start()
     {
+        Param.param = param;
+        param.RedactCoin(0);
+
+        param.Dead += OnDead;
+
+        GunModel = cMSEntityPfb.Components.OfType<TagGun>().FirstOrDefault();
+
+        audioSourceShot = GetComponent<AudioSource>();
+        audioSourceShot.clip = GunModel.audioClip;
+
         if (player != null)
             Debug.Log("Far!");
         player = this;
@@ -38,7 +52,6 @@ public class Player : MonoBehaviour
 
         anim = GetComponent<Animator>();
 
-        GunModel = cMSEntityPfb.Components.OfType<TagGun>().FirstOrDefault();
 
         parent = new GameObject("BulletPoolParent").transform;
 
@@ -49,7 +62,7 @@ public class Player : MonoBehaviour
             bulletsPool.Add(obj);
         }
 
-        CMSEntityPfb.IsDamage += IsDamage;
+        CMSEntityPfb.IsDamage += param.IsDamage;
     }
 
     private void OnEnable()
@@ -64,14 +77,8 @@ public class Player : MonoBehaviour
     }
     private void OnDestroy()
     {
-        CMSEntityPfb.IsDamage -= IsDamage;
-    }
-
-    private void IsDamage(int damage)
-    {
-        health -= damage;
-
-        hpBar.fillAmount = Mathf.Clamp01((float)health / (float)maxHealth);
+        CMSEntityPfb.IsDamage -= param.IsDamage;
+        param.Dead += OnDead;
     }
 
     public IEnumerator Shooting()
@@ -88,6 +95,7 @@ public class Player : MonoBehaviour
                 bullets.SetActive(true);
 
                 anim.SetTrigger("Atack");
+                audioSourceShot.Play();
 
                 GunModel.Execute(new State()
                 {

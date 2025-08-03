@@ -6,7 +6,8 @@ public class Controller : MonoBehaviour
 {
     public static Controller controller;
     [SerializeField] private CanvasGroup canvasGroupWin;
-
+    public CanvasGroup canvasGroupExemple;
+    
     public List<CMSEntityPfb> boost;
     public List<GameObject> BoostPoint = new();
     public CanvasGroup canvasGroupboost;
@@ -71,7 +72,7 @@ public class Controller : MonoBehaviour
 
         spawnerController.EndSpawnWoln(wav);
 
-        indexWave = wav.numberWave + 1;
+        indexWave++;
 
         wav = wave[indexWave].DeepCopy();
         spawnerController.StartSpawmWave(wav);
@@ -84,7 +85,6 @@ public class Controller : MonoBehaviour
         wav = wave[indexWave].DeepCopy();
         spawnerController.StartSpawmWave(wav);
     }
-
     public IEnumerator UpdatePanel(CanvasGroup canvasGroup)
     {
         if (canvasGroup.alpha == 0)

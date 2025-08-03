@@ -59,8 +59,9 @@ public class SpawnerController : MonoBehaviour
                     StartCoroutine(SpawnDuration(mobs));
             }
 
-            foreach (WaveEvent events in wave.waveEvents)
+            foreach (Event events in wave.waveEvents)
             {
+                if (events.isWave) continue;
                 if (events.eventTime > time) continue;
                 if (events.endOfWave)
                 {
@@ -70,7 +71,8 @@ public class SpawnerController : MonoBehaviour
                         continue;
                 }
 
-                events.onEvent.Components.OfType<IEvent>().FirstOrDefault().Execute(new StateEvent
+                events.isWave = true;
+                events.waveEvent.StartEvent(new StateEvent
                 {
                     coroutine = coroutineSpawn,
                     monoBehaviour = this

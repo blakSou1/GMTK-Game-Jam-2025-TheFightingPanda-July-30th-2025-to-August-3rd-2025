@@ -19,13 +19,22 @@ MonoBehaviour:
     spawnInterval: 3
     spawnDuration: 0
   waveEvents:
-  - endOfWave: 1
+  - waveEvent:
+      rid: 4834668149127512126
+    endOfWave: 1
     eventTime: 3
-    onEvent: {fileID: 5935838295469632042, guid: 34d77172ccaa49443a4d483fcf4c8298, type: 3}
+    isWave: 0
   objectPools:
   - objectPoolName: e
     item: []
-    obraz: {fileID: 1546525217582138215, guid: 8d808057507f8ae42ac503b783d7f8aa, type: 3}
+    obraz: {fileID: 1546525217582138215, guid: 471f587949259af44b08fb966b48c026, type: 3}
     expandable: 1
-    initialPoolSize: 1
+    initialPoolSize: 5
   numberWave: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 4834668149127512126
+      type: {class: EndWaveEvent, ns: , asm: Assembly-CSharp}
+      data:
+        onEvent: {fileID: 5935838295469632042, guid: 34d77172ccaa49443a4d483fcf4c8298, type: 3}

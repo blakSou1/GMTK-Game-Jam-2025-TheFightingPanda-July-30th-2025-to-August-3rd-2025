@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
@@ -24,6 +23,9 @@ public class Player : MonoBehaviour
     private Animator anim;
     private AudioSource audioSourceShot;
 
+    private List<IDisebleUpdate> ComponentsDisableUpdate;
+    private State state;
+
     public Param param;
     #endregion
     #endregion
@@ -34,8 +36,15 @@ public class Player : MonoBehaviour
     }
     public void Start()
     {
+        state = new State()
+        {
+            monoBehaviour = this
+        };
+
         Param.param = param;
         param.RedactCoin(0);
+        param.player = gameObject;
+        param.monoBehaviour = this;
 
         param.Dead += OnDead;
 
@@ -62,7 +71,11 @@ public class Player : MonoBehaviour
             bulletsPool.Add(obj);
         }
 
-        CMSEntityPfb.IsDamage += param.IsDamage;
+        ComponentsDisableUpdate = cMSEntityPfb.Components?
+        .Where(c => c is IDisebleUpdate)
+        .Cast<IDisebleUpdate>()
+        .ToList() ?? new List<IDisebleUpdate>();
+
     }
 
     private void OnEnable()
@@ -74,11 +87,13 @@ public class Player : MonoBehaviour
     {
         ApplicationController.inputPlayer.Player.Attack.performed -= i => coroutine = StartCoroutine(Shooting());
         ApplicationController.inputPlayer.Player.Attack.canceled -= i => StopAllCoroutines();
+
+        foreach (IDisebleUpdate enableUpdate in ComponentsDisableUpdate)
+            enableUpdate.OnDisable(state);
     }
     private void OnDestroy()
     {
-        CMSEntityPfb.IsDamage -= param.IsDamage;
-        param.Dead += OnDead;
+        param.Dead -= OnDead;
     }
 
     public IEnumerator Shooting()
@@ -97,11 +112,11 @@ public class Player : MonoBehaviour
                 anim.SetTrigger("Atack");
                 audioSourceShot.Play();
 
-                GunModel.Execute(new State()
+                GunModel.Execute(new State
                 {
-                    inputPosition = ApplicationController.inputPlayer.Player.Aim.ReadValue<Vector2>(),
                     gameObjectC = bullets,
-                    monoBehaviour = this
+                    inputPosition = ApplicationController.inputPlayer.Player.Aim.ReadValue<Vector2>(),
+                    monoBehaviour = state.monoBehaviour
                 });
             }
 

@@ -17,6 +17,14 @@ public class TagEventEndSpawnWave : EntityComponentDefinition, IEvent
     }
 }
 
+[Serializable]
+public class TagEventTextCuter : EntityComponentDefinition, IEvent
+{
+    public void Execute(StateEvent owner)
+    {
+    }
+}
+
 
 public class StateEvent
 {

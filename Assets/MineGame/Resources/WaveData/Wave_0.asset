@@ -14,19 +14,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mobs:
   - objectPoolName: e
-    count: 5
-    startSpawnTime: 0
-    spawnInterval: 3
+    count: 1
+    startSpawnTime: 2
+    spawnInterval: 1
+    spawnDuration: 0
+  - objectPoolName: e
+    count: 2
+    startSpawnTime: 5
+    spawnInterval: 1
     spawnDuration: 0
   - objectPoolName: e
     count: 5
-    startSpawnTime: 3
-    spawnInterval: 0
-    spawnDuration: 1
+    startSpawnTime: 8
+    spawnInterval: 1
+    spawnDuration: 0
+  - objectPoolName: e
+    count: 5
+    startSpawnTime: 8
+    spawnInterval: 1
+    spawnDuration: 0
   waveEvents:
-  - endOfWave: 1
+  - waveEvent:
+      rid: 4834668149127512124
+    endOfWave: 1
     eventTime: 10
-    onEvent: {fileID: 5935838295469632042, guid: 34d77172ccaa49443a4d483fcf4c8298, type: 3}
+    isWave: 0
+  - waveEvent:
+      rid: 4834668149127512127
+    endOfWave: 0
+    eventTime: 0
+    isWave: 0
   objectPools:
   - objectPoolName: e
     item: []
@@ -34,3 +51,19 @@ MonoBehaviour:
     expandable: 1
     initialPoolSize: 5
   numberWave: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 4834668149127512124
+      type: {class: EndWaveEvent, ns: , asm: Assembly-CSharp}
+      data:
+        onEvent: {fileID: 5935838295469632042, guid: 34d77172ccaa49443a4d483fcf4c8298, type: 3}
+    - rid: 4834668149127512127
+      type: {class: TextEvent, ns: , asm: Assembly-CSharp}
+      data:
+        onEvent: {fileID: 5935838295469632042, guid: dbb1d3b8ae390e444bd83c836388ceb5, type: 3}
+        prefabText: {fileID: 4594595598802460582, guid: a0e42f6df8444d446a67d447f5124afc, type: 3}
+        textSource:
+        - 0-1 Just the beginning
+        fadeDuration: 0.3
+        displayDuration: 0.9

@@ -6,7 +6,7 @@ using UnityEngine;
 public class Wave : ScriptableObject
 {
     public List<Mobs> mobs;
-    public List<WaveEvent> waveEvents;
+    public List<Event> waveEvents;
 
     public List<ObjectPoolItem> objectPools;
 
@@ -23,15 +23,17 @@ public class Wave : ScriptableObject
         // Глубокое копирование WaveEvents
         if (waveEvents != null)
         {
-            copiedWave.waveEvents = new List<WaveEvent>();
-            foreach (var waveEvent in waveEvents)
+            copiedWave.waveEvents = new List<Event>();
+            foreach (var Event in waveEvents)
             {
-                copiedWave.waveEvents.Add(new WaveEvent
+                copiedWave.waveEvents.Add(new Event
                 {
-                    eventTime = waveEvent.eventTime,
-                    endOfWave = waveEvent.endOfWave,
-                    onEvent = waveEvent.onEvent // Shallow copy, так как это reference type
+                    eventTime = Event.eventTime,
+                    endOfWave = Event.endOfWave,
+                    isWave = Event.isWave,
+                    waveEvent = Event.waveEvent.DeepCopy() // Shallow copy, так как это reference type
                 });
+                
             }
         }
 
@@ -75,12 +77,23 @@ public class Wave : ScriptableObject
 }
 
 [Serializable]
-public class WaveEvent
+public class Event
 {
+    [SerializeReference, SubclassSelector]
+    public WaveEvent waveEvent;
     public bool endOfWave;
     public float eventTime;
+
+    [HideInInspector] public bool isWave = false;
+}
+
+[Serializable]
+public abstract class WaveEvent
+{
+    public abstract void StartEvent(StateEvent owner);
     public CMSEntityPfb onEvent;
 }
+
 
 [Serializable]
 public class Mobs
@@ -107,7 +120,7 @@ public class ObjectPoolItem
 {
     public string objectPoolName;
 
-    public List<GameObject> item = new();
+    [HideInInspector] public List<GameObject> item = new();
     public CMSEntityPfb obraz;
 
     /// <summary>

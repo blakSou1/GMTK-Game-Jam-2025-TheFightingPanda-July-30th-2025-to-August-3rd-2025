@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using Runtime;
@@ -13,12 +12,12 @@ public class CMSEntityPfb : MonoBehaviour
 
     [SerializeReference, SubclassSelector]
     public List<EntityComponentDefinition> Components;
+    
     private List<IFixedUpdate> ComponentsRuntimeUpdate;
     private List<IAnimationEvent> ComponentsAnimEvent;
     private List<IEnableUpdate> ComponentsEnableUpdate;
     private List<IDisebleUpdate> ComponentsDisableUpdate;
     [HideInInspector] public State state;
-    public static event Action<int> IsDamage;
     private bool isStartUpdate = true;
 
     public CMSEntity AsEntity()
@@ -67,6 +66,8 @@ public class CMSEntityPfb : MonoBehaviour
 
         state = new State
         {
+            audio = GetComponent<AudioSource>(),
+            monoBehaviour = this,
             anim = GetComponent<Animator>(),
             gameObjectC = gameObject,
             cms = this,
@@ -118,10 +119,6 @@ public class CMSEntityPfb : MonoBehaviour
             updateComponent.Event(state);
     }
 
-    public static void TriggerScoreChanged(int newScore)
-    {
-        IsDamage?.Invoke(newScore);
-    }
     public void DeepCopyComponents()
     {
         Components = Components.Select(component =>

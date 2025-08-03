@@ -23,8 +23,97 @@ public class TagNearAtack : EntityComponentDefinition, IAtack, IFixedUpdate, IAn
     public void Event(State owner)
     {
         if (owner.AnimEvent == animEventKey)
-            CMSEntityPfb.TriggerScoreChanged(damage);
+            Param.param.IsDamage(damage);
     }
+}
+
+[Serializable]
+public class TagBombAtack : EntityComponentDefinition, IAtack, IFixedUpdate, IAnimationEvent
+{
+    [SerializeField] private AudioClip clip;
+    [SerializeField] private int damage = 15;
+    [SerializeField] private string paramName = "Atack";
+    public float distanceToAtack = .4f;
+    [SerializeField] private string animEventKey = "Atack";
+
+    public void Execute(State owner)
+    {
+        if (owner.distancePlayer.distanceIsPlayer < distanceToAtack)
+            owner.anim.SetBool(paramName, true);
+        else
+            owner.anim.SetBool(paramName, false);
+    }
+
+    public void Event(State owner)
+    {
+        if (owner.AnimEvent == animEventKey)
+        {
+            owner.audio.clip = clip;
+            owner.audio.Play();
+
+            Param.param.IsDamage(damage);
+        }
+    }
+}
+
+[Serializable]
+public class TagGunAtack : EntityComponentDefinition, IAtack, IFixedUpdate, IAnimationEvent
+{
+    [SerializeField] private AudioClip clip;
+    [SerializeField] private int damage = 15;
+    [SerializeField] private string paramName = "Atack";
+    public float distanceToAtack = 5;
+    [SerializeField] private string animEventKey = "Atack";
+    public GameObject bulletPrefab;
+    public Transform bulletStartPos;
+    public float speed = 30;
+
+    public void Execute(State owner)
+    {
+        if (owner.distancePlayer.distanceIsPlayer < distanceToAtack)
+            owner.anim.SetBool(paramName, true);
+        else
+            owner.anim.SetBool(paramName, false);
+    }
+
+    public void Event(State owner)
+    {
+        if (owner.AnimEvent == animEventKey)
+        {
+            owner.audio.clip = clip;
+            owner.audio.Play();
+
+            GameObject bul = GameObject.Instantiate(bulletPrefab, bulletStartPos);
+            owner.monoBehaviour.StartCoroutine(BulletRun(bul));
+        }
+    }
+
+    private IEnumerator BulletRun(GameObject bullet)
+    {
+        Vector2 startPosition = bullet.transform.position;
+
+        float totalDistance = Vector3.Distance(startPosition, Param.param.player.transform.position);
+        float distanceTraveled = 0;
+
+        while (distanceTraveled < totalDistance)
+        {
+            float moveDistance = speed * Time.fixedDeltaTime;
+            distanceTraveled += moveDistance;
+
+            // Ограничиваем перемещение, чтобы не перескочить цель
+            distanceTraveled = Mathf.Min(distanceTraveled, totalDistance);
+
+            float progress = distanceTraveled / totalDistance;
+            bullet.transform.position = Vector3.Lerp(startPosition, Param.param.player.transform.position, progress);
+
+            yield return new WaitForEndOfFrame();
+        }
+
+        Param.param.IsDamage(damage);
+
+        GameObject.Destroy(bullet);
+    }
+    
 }
 
 [Serializable]
@@ -61,6 +150,7 @@ public class TagDistanceDetecterToPlayer : DistancePlayer, IFixedUpdate, IStartU
     {
         if (player == null)
             player = GameObject.FindWithTag("Player");
+        distanceIsPlayer = 500;
     }
 }
 
@@ -116,8 +206,10 @@ public class TagHealth : EntityComponentDefinition, IDamage, IRuntimeStats, IAni
 }
 
 [Serializable]
-public class TagGun : EntityComponentDefinition, IShoot
+public class TagGun : EntityComponentDefinition, IShoot, IDisebleUpdate
 {
+    public event Action<State> IsAtack;
+
     public AudioClip audioClip;
     public LayerMask mask;
     public int damage;
@@ -128,27 +220,27 @@ public class TagGun : EntityComponentDefinition, IShoot
 
     public IEnumerator Atack(State owner)
     {
-        owner.inputPosition = Camera.main.ScreenToWorldPoint(owner.inputPosition);
+        Vector2 inputPosition = Camera.main.ScreenToWorldPoint(owner.inputPosition);
         Vector2 startPosition = owner.gameObjectC.transform.position;
 
-        float totalDistance = Vector3.Distance(startPosition, owner.inputPosition);
+        float totalDistance = Vector3.Distance(startPosition, inputPosition);
         float distanceTraveled = 0;
 
         while (distanceTraveled < totalDistance)
         {
-            float moveDistance = speed * Time.fixedDeltaTime;
+            float moveDistance = (speed + Param.param.speed) * Time.fixedDeltaTime;
             distanceTraveled += moveDistance;
 
             // Ограничиваем перемещение, чтобы не перескочить цель
             distanceTraveled = Mathf.Min(distanceTraveled, totalDistance);
 
             float progress = distanceTraveled / totalDistance;
-            owner.gameObjectC.transform.position = Vector3.Lerp(startPosition, owner.inputPosition, progress);
+            owner.gameObjectC.transform.position = Vector3.Lerp(startPosition, inputPosition, progress);
 
             yield return new WaitForEndOfFrame();
         }
 
-        RaycastHit2D hit = Physics2D.CircleCast(owner.inputPosition, .2f, Vector2.zero,mask);
+        RaycastHit2D hit = Physics2D.CircleCast(inputPosition, .2f, Vector2.zero, mask);
 
         if (hit.collider != null)
         {
@@ -164,33 +256,48 @@ public class TagGun : EntityComponentDefinition, IShoot
 
     public void Execute(State owner)
     {
+        IsAtack?.Invoke(owner);
         owner.monoBehaviour.StartCoroutine(Atack(owner));
     }
-}
 
-[Serializable]
-public class TagAnimator : EntityComponentDefinition, IStartUpdate
-{
-    public RuntimeAnimatorController animController;
-
-    public void Start(State owner)
+    public void OnDisable(State owner)
     {
-        owner.gameObjectC.GetComponent<Animator>().runtimeAnimatorController = animController;
+        IsAtack = null;
     }
 }
 
 [Serializable]
-public class TagHeling : EntityComponentDefinition, IBoost, IStartUpdate, IDisebleUpdate, IFixedUpdate
+public class TagUpGun : EntityComponentDefinition, IBoost, IStartUpdate, IDisebleUpdate, IFixedUpdate
 {
-    public int hp = 20;
-    public int coin = 5;
-    
+    public int coin = 1;
+    public CMSEntityPfb GunModel;
+    public float timePause = .1f;
+    public int DebafDamage = 2;
+
     public void Boost(State owner)
     {
-        Param.param.RedactCoin(-coin);
+        Param.param.upDamage -= DebafDamage;
+        GunModel.Components.OfType<TagGun>().FirstOrDefault().IsAtack += i => Param.param.monoBehaviour.StartCoroutine(UpAtack(i));
+        Param.param.coin -= coin;
 
-        Param.param.AddHealth(hp);
         owner.gameObjectC.SetActive(false);
+    }
+    private IEnumerator UpAtack(State owner)
+    {
+        GameObject bullets = GameObject.Instantiate(owner.gameObjectC, owner.gameObjectC.transform.parent);
+        bullets.transform.position = bullets.transform.position;
+        bullets.SetActive(true);
+
+        yield return new WaitForSeconds(timePause);
+
+        GameObject.Destroy(bullets, 1);
+
+        Param.param.monoBehaviour.StartCoroutine(GunModel.Components.OfType<TagGun>().FirstOrDefault().Atack(new State
+        {
+            gameObjectC = bullets,
+            inputPosition = owner.inputPosition,
+            monoBehaviour = Param.param.monoBehaviour
+        }));
     }
 
     public void Execute(State owner)
@@ -210,6 +317,46 @@ public class TagHeling : EntityComponentDefinition, IBoost, IStartUpdate, IDiseb
         generalButton.UpdateText($"{coin}");
 
         if (Param.param.coin < coin)
+        {
+            generalButton.UpdateInteractable(false);
+            return;
+        }
+
+        generalButton.onClick.AddListener(() => Boost(owner));
+    }
+}
+
+[Serializable]
+public class TagHeling : EntityComponentDefinition, IBoost, IStartUpdate, IDisebleUpdate, IFixedUpdate
+{
+    public int hp = 20;
+    public int coin = 3;
+    
+    public void Boost(State owner)
+    {
+        Param.param.RedactCoin(-coin);
+
+        Param.param.AddHealth(hp);
+        owner.gameObjectC.SetActive(false);
+    }
+
+    public void Execute(State owner)
+    {
+        if (Param.param.coin < coin || Param.param.health == Param.param.maxHealth)
+            owner.gameObjectC.GetComponentInChildren<GeneralButton>().UpdateInteractable(false);
+    }
+
+    public void OnDisable(State owner)
+    {
+        owner.gameObjectC.GetComponentInChildren<GeneralButton>().onClick.RemoveAllListeners();
+    }
+
+    public void Start(State owner)
+    {
+        GeneralButton generalButton = owner.gameObjectC.GetComponentInChildren<GeneralButton>();
+        generalButton.UpdateText($"{coin}");
+
+        if (Param.param.coin < coin || Param.param.health == Param.param.maxHealth)
         {
             generalButton.UpdateInteractable(false);
             return;
@@ -259,8 +406,47 @@ public class TagUpDamage : EntityComponentDefinition, IBoost, IStartUpdate, IDis
     }
 }
 
+[Serializable]
+public class TagUpSpeedGun : EntityComponentDefinition, IBoost, IStartUpdate, IDisebleUpdate, IFixedUpdate
+{
+    public float upSpeed = .2f;
+    public int coin = 5;
+
+    public void Boost(State owner)
+    {
+        Param.param.speed += upSpeed;
+        owner.gameObjectC.SetActive(false);
+    }
+
+    public void Execute(State owner)
+    {
+        if (Param.param.coin < coin)
+            owner.gameObjectC.GetComponentInChildren<GeneralButton>().UpdateInteractable(false);
+    }
+
+    public void OnDisable(State owner)
+    {
+        owner.gameObjectC.GetComponentInChildren<GeneralButton>().onClick.RemoveAllListeners();
+    }
+
+    public void Start(State owner)
+    {
+        GeneralButton generalButton = owner.gameObjectC.GetComponentInChildren<GeneralButton>();
+        generalButton.UpdateText($"{coin}");
+
+        if (Param.param.coin < coin)
+        {
+            generalButton.UpdateInteractable(false);
+            return;
+        }
+
+        generalButton.onClick.AddListener(() => Boost(owner));
+    }
+}
+
 public class State : UnityEngine.Object
 {
+    public AudioSource audio;
     public string AnimEvent;
     public DistancePlayer distancePlayer;
     public MonoBehaviour monoBehaviour;

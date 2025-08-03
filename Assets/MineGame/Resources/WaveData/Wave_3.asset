@@ -1,0 +1,95 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 05d2c7660589e814a935d739a20b495d, type: 3}
+  m_Name: Wave_3
+  m_EditorClassIdentifier: 
+  mobs:
+  - objectPoolName: b
+    count: 4
+    startSpawnTime: 1
+    spawnInterval: 0
+    spawnDuration: 1
+  - objectPoolName: e
+    count: 9
+    startSpawnTime: 9
+    spawnInterval: 0
+    spawnDuration: 5
+  - objectPoolName: g
+    count: 7
+    startSpawnTime: 11
+    spawnInterval: 2
+    spawnDuration: 0
+  - objectPoolName: e
+    count: 8
+    startSpawnTime: 5
+    spawnInterval: 3
+    spawnDuration: 0
+  - objectPoolName: b
+    count: 4
+    startSpawnTime: 4
+    spawnInterval: 0
+    spawnDuration: 3
+  - objectPoolName: g
+    count: 3
+    startSpawnTime: 11
+    spawnInterval: 4
+    spawnDuration: 0
+  waveEvents:
+  - waveEvent:
+      rid: 4834668149127512125
+    endOfWave: 1
+    eventTime: 10
+    isWave: 0
+  - waveEvent:
+      rid: 4834668149127512130
+    endOfWave: 0
+    eventTime: 0
+    isWave: 0
+  - waveEvent:
+      rid: 4834668149127512130
+    endOfWave: 0
+    eventTime: 9
+    isWave: 0
+  objectPools:
+  - objectPoolName: e
+    item: []
+    obraz: {fileID: 1546525217582138215, guid: 8d808057507f8ae42ac503b783d7f8aa, type: 3}
+    expandable: 1
+    initialPoolSize: 5
+  - objectPoolName: b
+    item: []
+    obraz: {fileID: 1546525217582138215, guid: bce689398c6e44346a00a23560164dd7, type: 3}
+    expandable: 0
+    initialPoolSize: 5
+  - objectPoolName: g
+    item: []
+    obraz: {fileID: 1546525217582138215, guid: 471f587949259af44b08fb966b48c026, type: 3}
+    expandable: 0
+    initialPoolSize: 5
+  numberWave: 3
+  references:
+    version: 2
+    RefIds:
+    - rid: 4834668149127512125
+      type: {class: EndWaveEvent, ns: , asm: Assembly-CSharp}
+      data:
+        onEvent: {fileID: 5935838295469632042, guid: 34d77172ccaa49443a4d483fcf4c8298, type: 3}
+    - rid: 4834668149127512130
+      type: {class: TextEvent, ns: , asm: Assembly-CSharp}
+      data:
+        onEvent: {fileID: 5935838295469632042, guid: dbb1d3b8ae390e444bd83c836388ceb5, type: 3}
+        prefabText: {fileID: 4594595598802460582, guid: a0e42f6df8444d446a67d447f5124afc, type: 3}
+        textSource:
+        - 0-3 The last race
+        - Thanks for playing!
+        fadeDuration: 0.3
+        displayDuration: 0.9

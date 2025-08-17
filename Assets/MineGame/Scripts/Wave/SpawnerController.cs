@@ -8,7 +8,7 @@ public class SpawnerController : MonoBehaviour
     #region Param
     [SerializeField] private List<Transform> spawnPoint;
     [SerializeField] private GameObject enemyPrefab;
-    public static GameObject EnemyPrefab;
+    [ReadOnly] public static GameObject EnemyPrefab;
     private ObjectPool pool;
     private Wave wave;
     [ReadOnly] public float time = 0;

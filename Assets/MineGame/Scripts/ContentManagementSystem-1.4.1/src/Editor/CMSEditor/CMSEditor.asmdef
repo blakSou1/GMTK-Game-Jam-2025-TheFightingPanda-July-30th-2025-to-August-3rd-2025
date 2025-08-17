@@ -1,7 +1,0 @@
-{
-  "name": "CMSEditor",
-  "references": [
-    "CMS"
-  ],
-  "includePlatforms": [ "Editor" ]
-}

@@ -23,7 +23,6 @@ public class Player : MonoBehaviour
     private Animator anim;
     private AudioSource audioSourceShot;
 
-    private List<IDisebleUpdate> ComponentsDisableUpdate;
     private State state;
 
     public Param param;
@@ -34,17 +33,17 @@ public class Player : MonoBehaviour
     {
         StartCoroutine(Controller.controller.UpdatePanel(canvasGroupLouse));
     }
-    public void Start()
+    public void Awake()
     {
         state = new State()
         {
             monoBehaviour = this
         };
 
-        Param.param = param;
+        G.param = param;
         param.RedactCoin(0);
-        param.player = gameObject;
-        param.monoBehaviour = this;
+        G.player = gameObject;
+        G.monoBehaviour = this;
 
         param.Dead += OnDead;
 
@@ -52,6 +51,8 @@ public class Player : MonoBehaviour
 
         audioSourceShot = GetComponent<AudioSource>();
         audioSourceShot.clip = GunModel.audioClip;
+
+        GunModel.Init(cMSEntityPfb);
 
         if (player != null)
             Debug.Log("Far!");
@@ -71,29 +72,25 @@ public class Player : MonoBehaviour
             bulletsPool.Add(obj);
         }
 
-        ComponentsDisableUpdate = cMSEntityPfb.Components?
-        .Where(c => c is IDisebleUpdate)
-        .Cast<IDisebleUpdate>()
-        .ToList() ?? new List<IDisebleUpdate>();
-
+        G.playerInput = new();
+        G.playerInput.Enable();
     }
 
     private void OnEnable()
     {
-        ApplicationController.inputPlayer.Player.Attack.performed += i => coroutine = StartCoroutine(Shooting());
-        ApplicationController.inputPlayer.Player.Attack.canceled += i => StopCoroutine(coroutine);
+        G.playerInput.Player.Attack.performed += i => coroutine = StartCoroutine(Shooting());
+        G.playerInput.Player.Attack.canceled += i => StopCoroutine(coroutine);
     }
     private void OnDisable()
     {
-        ApplicationController.inputPlayer.Player.Attack.performed -= i => coroutine = StartCoroutine(Shooting());
-        ApplicationController.inputPlayer.Player.Attack.canceled -= i => StopAllCoroutines();
-
-        foreach (IDisebleUpdate enableUpdate in ComponentsDisableUpdate)
-            enableUpdate.OnDisable(state);
+        G.playerInput.Player.Attack.performed -= i => coroutine = StartCoroutine(Shooting());
+        G.playerInput.Player.Attack.canceled -= i => StopAllCoroutines();
     }
     private void OnDestroy()
     {
+        GunModel.OnDestroy(cMSEntityPfb);
         param.Dead -= OnDead;
+        G.playerInput.Disable();
     }
 
     public IEnumerator Shooting()
@@ -115,7 +112,7 @@ public class Player : MonoBehaviour
                 GunModel.Execute(new State
                 {
                     gameObjectC = bullets,
-                    inputPosition = ApplicationController.inputPlayer.Player.Aim.ReadValue<Vector2>(),
+                    inputPosition = G.playerInput.Player.Aim.ReadValue<Vector2>(),
                     monoBehaviour = state.monoBehaviour
                 });
             }
